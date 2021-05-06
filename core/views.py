@@ -462,7 +462,8 @@ def search_view(request):
     questions_set = set()
 
     for question in questions:
-        answer = question.answers.all().order_by('-upvotes').first()
+        answer = question.answers.all().order_by('upvotes').first()
+
         if answer == None:
             questions_set.add(question)
         else:
