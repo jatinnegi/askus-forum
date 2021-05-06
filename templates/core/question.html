@@ -1,0 +1,314 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ question.content }}{% endblock %}
+{% block content %}
+
+<div class="container-fluid my-5">
+    <div id="question-row">
+        <div id="question-main-content">
+            <div id="question-container" class="p-2 pt-3 rounded">
+                {% if question.author == user %}
+                <div class="dropdown float-right mr-2">
+                    <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                        aria-expanded="false">
+                        <i class="fas fa-chevron-down"></i>
+                    </a>
+
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item text-primary"
+                            href="{% url 'core:question_update' question.pk %}">Edit</a>
+                        <a data-toggle="modal" href="#myModal" class="dropdown-item text-primary"
+                            onClick="deleteQuestion(event, {{ question.pk }})">Delete</a>
+                    </div>
+                </div>
+                {% endif %}
+                <h4>
+                    {{ question.content }}
+                </h4>
+                <small class="text-secondary d-block">{{ question.uploaded_on }}</small>
+                <small class="text-secondary mr-3">Asked by-
+                    {% if question.anonymous %}
+                    Anonymous User
+                    {% else %}
+                    <a href="{% url 'accounts:profile' question.author.username %}"
+                        class="text-secondary">{{ question.author }}</a>
+                    {% endif %}
+                </small>
+                <div class="mt-3">
+                    {% if user.is_authenticated %}
+                    <ul class="list-group list-group-horizontal border-top pt-2">
+                        <li class="list-group-item flex-fill text-center p-0 px-lg-2 border border-0">
+                            <a class="small text-decoration-none mr-3 question-vote" id="question-upvote"
+                                onClick="questionVote(event, 'upvote')" href="#">
+                                <i
+                                    class="{% if user in question.upvotes.all %} fas fa-thumbs-up {% else %} far fa-thumbs-up {% endif %}"></i>
+                                <span id="question-upvote-total">{{ question.upvotes.all.count }}</span>
+                            </a>
+                            <a class="small text-decoration-none question-vote" id="question-downvote"
+                                onClick="questionVote(event, 'downvote')" href="#">
+                                <i
+                                    class="{% if user in question.downvotes.all %} fas fa-thumbs-down {% else %} far fa-thumbs-down {% endif %}"></i>
+                                <span id="question-downvote-total">{{ question.downvotes.all.count }}</span>
+                            </a>
+                        </li>
+                        <li class=" list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0
+                                    border-top-0 border-bottom-0">
+                            <a class="small text-decoration-none" data-toggle="collapse" href="#answer-form"
+                                role="button" aria-expanded="false" aria-controls="collapseExample">
+                                <i class="fas fa-pencil-alt"></i> Answer
+                            </a>
+                        </li>
+                        <li
+                            class="list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0 border-top-0 border-bottom-0 ">
+                            <a class="small text-decoration-none" href="#user-list" onClick="displayUsersList(event)">
+                                <i class="fas fa-people-arrows"></i> Request
+                            </a>
+                        </li>
+                    </ul>
+                    {% endif %}
+                    <div class="mt-2 pt-3 pl-1 border-top">
+                        <p><i class="far fa-file-alt"></i> {{ question.answers.all|length }}
+                            {% if question.answers.all|length == 1 %} Answer {% else %}
+                            Answers {% endif %} </p>
+                    </div>
+                </div>
+
+                <!-- collapsed comments begins -->
+                <div class="collapse" id="answer-form">
+                    <div class="card border border-right-0 border-left-0 border-bottom-0 mt-1">
+                        <!-- new comment form -->
+                        <section class="mt-3">
+                            {% csrf_token %}
+                            {{ form.media }}
+                            {{ form.content }}
+                            <div class="form-check p-0 mt-2">
+                                {{ form.anonymous }}
+                                <label for="answer-form-anonymous">
+                                    Answer anonymously
+                                </label>
+                            </div>
+                            <button id="answer-submit-button" class=" btn btn-primary" type="submit" disabled
+                                style="cursor:not-allowed">Submit
+                                Answer</button>
+                        </section>
+                    </div>
+                </div>
+            </div>
+            <!-- Post Begins -->
+            {% if question.answers.all|length == 0 %}
+            <section class="card mt-4 p-5 d-flex justify-content-center align-items-center">
+                <p class="font-weight-bold" style="font-size: 1.2rem;"><i class="fas fa-pencil-alt"></i> No Answers Yet
+                </p>
+            </section>
+            {% else %}
+            <div id="answers-container">
+                {% for answer in answers %}
+                <section class="card mt-4">
+                    <div class="p-3 pb-2">
+                        <!-- post header -->
+                        <div class="row m-0">
+                            <div class="">
+                                <a class="text-decoration-none"
+                                    href="{% url 'accounts:profile' answer.author.username %}">
+                                    <div id="home-questions-list-avatar"
+                                        style="background-image:url('{% if answer.anonymous %}{{ answer.author.get_anonymous_avatar }}{% else %}{{ answer.author.get_avatar }}{% endif %}');">
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="flex-grow-1 pl-2">
+                                <h2 class="text-capitalize h5 mb-0">
+                                    {% if answer.anonymous %}
+                                    <span style='color:#007bff;'>AnonymousUser</span>
+                                    {% else %}
+                                    <a class="text-decoration-none"
+                                        href="{% url 'accounts:profile' answer.author.username %}">
+                                        {{ answer.author.username }}
+                                    </a>
+                                    {% endif %}
+                                </h2>
+                                <p class="small text-secondary m-0 mt-1">{{ answer.uploaded_on }}</p>
+                            </div>
+                            {% if answer.author == request.user %}
+                            <div class="dropdown">
+                                <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-chevron-down"></i>
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item text-primary"
+                                        href="{% url 'core:answer_update' answer.pk %}">Edit</a>
+                                    <a data-toggle="modal" href="#myModal" class="dropdown-item text-primary"
+                                        onClick="deleteAnswer(event, {{ answer.pk }})">Delete</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- post body -->
+                        <div id="answer-container" class="pt-3">
+                            <p class="my-2">
+                                {{ answer.content|safe }}
+                            </p>
+                        </div>
+                        <hr class="my-1">
+                        <!-- post footer begins -->
+                        <footer class="">
+                            <!-- post actions -->
+                            <div class="">
+                                <ul class="list-group list-group-horizontal">
+                                    <li class="list-group-item flex-fill text-center p-0 px-lg-2 border border-0">
+                                        <a id="answer-upvote-{{ answer.id }}" class="small text-decoration-none mr-1"
+                                            onClick="answerVote(event, {{ answer.id }}, 'upvote')" href="#">
+                                            <i
+                                                class="{% if user in answer.upvotes.all %} fas fa-thumbs-up {% else %} far fa-thumbs-up {% endif %}"></i>
+                                            <span
+                                                id="answer-upvote-total-{{ answer.id }}">{{ answer.upvotes.all.count }}</span>
+                                        </a>
+                                        <a id="answer-downvote-{{ answer.id }}" class="small text-decoration-none"
+                                            onClick="answerVote(event, {{ answer.id }}, 'downvote')" href="#">
+                                            <i
+                                                class="{% if user in answer.downvotes.all %} fas fa-thumbs-down {% else %} far fa-thumbs-down {% endif %}"></i>
+                                            <span
+                                                id="answer-downvote-total-{{ answer.id }}">{{ answer.downvotes.all.count }}</span>
+                                        </a>
+                                    </li>
+                                    <li
+                                        class="list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0 border-top-0 border-bottom-0">
+                                        <a class="small text-decoration-none" data-toggle="collapse"
+                                            href="#{{ answer.author.username }}{{ answer.id }}" role="button"
+                                            aria-expanded="false" aria-controls="collapseExample">
+                                            <i class="fas fa-comment-alt"></i> {{ answer.comments.all.count }}
+                                            {% if answer.comments.all.count == 1 %}
+                                            comment
+                                            {% else %}
+                                            comments
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                    <li
+                                        class="list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0 border-top-0 border-bottom-0 ">
+                                        <form id="answer_share_form_{{ answer.pk }}" method='POST'
+                                            action="{% url 'core:answer_share' answer.pk %}">
+                                            {% csrf_token %}
+                                            <a class="small text-decoration-none" href="javascript:{}"
+                                                onClick="document.getElementById('answer_share_form_{{answer.pk}}').submit();">
+                                                {% if user in answer.shares.all %} <i class="fas fa-share-square"></i>
+                                                {% else %}<i class="far fa-share-square"></i>
+                                                {% endif %}{{ answer.shares.all|length }}
+                                                {% if answer.shares.all|length == 1 %} Share {% else %} Shares
+                                                {% endif %}
+                                            </a>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                            <!-- collapsed comments begins -->
+                            <div class="collapse" id="{{ answer.author.username }}{{ answer.id }}">
+                                <div class="card border border-right-0 border-left-0 border-bottom-0 mt-1">
+                                    <!-- new comment form -->
+                                    <section class="mt-3">
+                                        <form action="" onSubmit="addComment(event, {{ answer.id }})">
+                                            <div class="input-group input-group">
+                                                <input type="text" class="form-control" placeholder="Write Comment"
+                                                    aria-label="Recipient's username" aria-describedby="basic-addon2"
+                                                    id="comment-form-input-{{ answer.id }}"
+                                                    onKeyUp="commentInputChange(event, {{ answer.id }})" />
+                                                <div class="input-group-append">
+                                                    <input type="submit" value="Comment"
+                                                        id="comment-submit-button-{{ answer.id }}"
+                                                        class="text-decoration-none text-white btn btn-primary" disabled
+                                                        style="cursor:not-allowed;" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </section>
+                                    <!-- comment card bgins -->
+                                    <div id="comments-container-{{ answer.id }}">
+                                        {% for comment in answer.comments.all %}
+                                        <section id="answer-comment-{{comment.pk}}">
+                                            <div class="card p-2 mt-3">
+                                                <!-- comment header -->
+                                                <div class="d-flex">
+                                                    <div class="">
+                                                        <div id="home-questions-list-avatar"
+                                                            style="background-image: url('{{ comment.user.get_avatar }}')">
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1 pl-2">
+                                                        <a class="text-decoration-none text-capitalize h6 m-0"
+                                                            href="{% url 'accounts:profile' answer.author.username %}">{{ comment.user.username }}</a>
+                                                        <p class="small m-0 text-muted">{{ comment.uploaded_on }}</p>
+                                                    </div>
+                                                    {% if user == comment.user %}
+                                                    <div>
+                                                        <div class="dropdown">
+                                                            <a class="" href="#" role="button" id="dropdownMenuLink"
+                                                                data-toggle="dropdown" aria-haspopup="true"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-chevron-down"></i>
+                                                            </a>
+
+                                                            <div class="dropdown-menu"
+                                                                aria-labelledby="dropdownMenuLink">
+                                                                <a data-toggle="modal" href="#myModal"
+                                                                    class="dropdown-item text-primary"
+                                                                    onClick="deleteComment(event, {{ comment.pk }})">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <!-- comment header -->
+                                                <!-- comment body -->
+                                                <div class="card-body p-0">
+                                                    <p class="card-text h7 mb-2">{{ comment.content }}</p>
+                                                    <a id="comment-upvote-{{ comment.id }}" class="card-link small"
+                                                        onClick="commentVote(event, {{ comment.id }}, 'upvote')"
+                                                        href="#">
+                                                        <i
+                                                            class="{% if user in comment.upvotes.all %} fas fa-thumbs-up {% else %} far fa-thumbs-up {% endif %}"></i>
+                                                        <span
+                                                            id="comment-upvote-total-{{ comment.id }}">{{ comment.upvotes.all.count }}</span>
+                                                    </a>
+                                                    <a id="comment-downvote-{{ comment.id }}" class="card-link small"
+                                                        onClick="commentVote(event, {{ comment.id }}, 'downvote')"
+                                                        href="#">
+                                                        <i
+                                                            class="{% if user in comment.downvotes.all %} fas fa-thumbs-down {% else %} far fa-thumbs-down {% endif %}"></i>
+                                                        <span
+                                                            id="comment-downvote-total-{{ comment.id }}">{{ comment.downvotes.all.count }}</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </section>
+                                        {% endfor %}
+                                    </div>
+                                    <!-- comment card ends -->
+
+                                </div>
+                            </div>
+                            <!-- collapsed comments ends -->
+                        </footer>
+                        <!-- post footer ends -->
+                    </div>
+                </section>
+                {% endfor %}
+            </div>
+            {% endif %}
+            <!-- Post Ends -->
+        </div>
+    </div>
+</div>
+{{ question.id|json_script:'question-id' }}
+<script src="{% static 'js/question-action.js' %}"></script>
+<script src="{% static 'js/answer.js' %}"></script>
+<script>
+    function displayUsersList(event) {
+        event.preventDefault();
+        document.getElementById('box-container').classList.add('active');
+        document.querySelector('body').style.overflow = 'hidden';
+    }
+</script>
+{% endblock %}

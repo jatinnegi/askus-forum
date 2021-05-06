@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ profile_user.username|capfirst }} - AskUs Profile{% endblock %}
+{% block content %}
+<div class="profile">
+    <div class="secondary-tab mb-4">
+        <div class="avatar-container mb-4">
+            <img class="user-avatar-image" src="{{ profile_user.avatar.url }}"
+                alt="{{ profile_user.username }}'s profile picture" />
+            {% if user == profile_user %}
+            <div class="avatar-change-button d-flex justify-content-center align-items-center"
+                onClick="displayAvatarFile(event)"><span>Change Avatar<span>
+            </div>
+            {% endif %}
+        </div>
+        <form class="avatar-form" method='POST' action="{% url 'accounts:avatar_update' profile_user.username %}"
+            enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.avatar }}
+            <input id="avatar-update" type="submit" value="Update" />
+        </form>
+        {% if user == profile_user %}
+        {% include 'core/sidepanel.html' %}
+        {% endif %}
+    </div>
+    <div class="primary-tab">
+        {% if profile_user.get_full_name|length > 0 %}
+        <h4>{{ profile_user.get_full_name }}</h4>
+        {% endif %}
+        <h5 class="text-primary mb-3">@{{ profile_user.username }}</h5>
+
+        {% if profile_user == user %}
+        <div class="profile-input-group">
+            <input id="profile-bio-input" type="text" value="{{ profile_user.bio }}"
+                placeholder="{% if profile_user.bio|length > 0 %} {{ profile_user.bio }} {%  else %} Enter your bio here {% endif %}"
+                disabled maxlength="50" autocomplete="off" />
+            <i id="profile-bio-icon" class="fas fa-edit fa-sm" style="cursor:pointer;"
+                onClick="inputDisplay(event, 'bio')"></i>
+        </div>
+        {% else %}
+        <small>{{ profile_user.bio }}</small>
+        {% endif %}
+
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                    aria-selected="true" style="background:#f0f0f0;">About</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="all-questions-tab" data-toggle="tab" href="#all-questions" role="tab"
+                    aria-controls="profile" aria-selected="false" style="background:#f0f0f0;">All Questions
+                    ({{ profile_user.get_questions|length }})</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="all-answers-tab" data-toggle="tab" href="#all-answers" role="tab"
+                    aria-controls="profile" aria-selected="false" style="background:#f0f0f0;">Answers
+                    ({{ profile_user.get_answers|length }})</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="all-answers-tab" data-toggle="tab" href="#answer-share" role="tab"
+                    aria-controls="profile" aria-selected="false" style="background:#f0f0f0;">Answers Shared
+                    ({{ profile_user.answer_shares.all|length }})</a>
+            </li>
+        </ul>
+        <div class="tab-content profile-tab" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Username</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p style="color: #0062cc !important;">{{ profile_user.username }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Email</label>
+                    </div>
+                    <div class="col-md-6">
+                        <p style="color: #0062cc !important;">{{ profile_user.email }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>First Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="profile-input-group">
+                            <p>
+                                <input class="profile-name-input" id="profile-first-name-input" type="text"
+                                    value="{{ profile_user.first_name }}"
+                                    placeholder="{% if profile_user.first_name|length > 0 %} {{ profile_user.first_name }} {%  else %} - {% endif %}"
+                                    disabled maxlength="50" autocomplete="off" />
+                                {% if user == profile_user %}
+                                <i class="fas fa-edit fa-sm" style="cursor:pointer;"
+                                    onClick="inputDisplay(event, 'first_name')"></i>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>Last Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="profile-input-group">
+                            <p>
+                                <input class="profile-name-input" id="profile-last-name-input" type="text"
+                                    value="{{ profile_user.last_name }}"
+                                    placeholder="{% if profile_user.last_name|length > 0 %} {{ profile_user.last_name }} {%  else %} - {% endif %}"
+                                    disabled maxlength="50" autocomplete="off" />
+                                {% if user == profile_user %}
+                                <i class="fas fa-edit fa-sm" style="cursor:pointer;"
+                                    onClick="inputDisplay(event, 'last_name')"></i>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="all-questions" role="tabpanel" aria-labelledby="all-questions-tab">
+                {% for question in profile_user.get_questions %}
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <a class="text-secondary" href="{% url 'core:question' question.pk %}"><span
+                                class="font-weight-bold">{{ question.content }}</span>
+                            -
+                            <small>{{ question.uploaded_on }}</small></a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="all-answers" role="tabpanel" aria-labelledby="all-answers-tab">
+                {% for answer in profile_user.get_answers %}
+                <div class="answer-row mb-3 pt-3 pb-1 rounded">
+                    <div class="col-md-12">
+                        <div class="dropdown float-right">
+                            <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-chevron-down"></i>
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <a class="dropdown-item text-primary"
+                                    href="{% url 'core:answer_update' answer.pk %}?next=">Edit</a>
+                                <a data-toggle="modal" href="#myModal" class="dropdown-item text-primary"
+                                    onClick="deleteAnswer(event, {{ answer.pk }})">Delete</a>
+
+                            </div>
+                        </div>
+                        <div class="border-bottom pb-3">
+                            <a class="text-secondary" href="{% url 'core:question' answer.question.pk %}"><span
+                                    class="font-weight-bold">{{ answer.question.content }}</span>
+                                -
+                                <small>{{ answer.uploaded_on }}</small></a>
+                        </div>
+                        <div id="profile-answer-{{ answer.pk }}" class="profile-answer mt-1" style="">
+                            {{ answer.content|safe }}
+                        </div>
+                        <a href="#" onClick="showFullAnswer(event, {{ answer.pk }})">Read More</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="tab-pane fade" id="answer-share" role="tabpanel" aria-labelledby="all-answers-tab">
+                {% for answer in profile_user.answer_shares.all %}
+                <section id="answer-container" class="card mb-4">
+                    <div class="p-3 pb-2">
+                        <!-- post header -->
+                        <div class="row m-0">
+                            <div class="">
+                                <a class="text-decoration-none"
+                                    href="{% url 'accounts:profile' answer.author.username %}">
+                                    <div id="home-questions-list-avatar"
+                                        style="background-image:url('{{answer.author.avatar.url}}');">
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="flex-grow-1 pl-2">
+                                <a class="text-decoration-none"
+                                    href="{% url 'accounts:profile' answer.author.username %}">
+                                    <h2 class="text-capitalize h5 mb-0" style="color: #007bff !important;">
+                                        {{ answer.author.username }}</h2>
+                                </a>
+                                <p class="small text-secondary m-0 mt-1">{{ answer.uploaded_on }}</p>
+                            </div>
+                            {% if user == answer.author %}
+                            <div class="dropdown">
+                                <a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                    <i class="fas fa-chevron-down"></i>
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item text-primary"
+                                        href="{% url 'core:answer_update' answer.pk %}">Edit</a>
+                                    <a data-toggle="modal" href="#myModal" class="dropdown-item text-primary"
+                                        onClick="deleteAnswer(event, {{ answer.pk }})">Delete</a>
+
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <!-- post body -->
+                        <div id="answer-container-{{ answer.pk }}">
+                            <div id="home-answer-{{ answer.id }}" class="home-answer pt-3"
+                                data-answerid="{{ answer.pk }}">
+                                <h5>
+                                    <a class="text-dark" href="{% url 'core:question' answer.question.id %}">
+                                        {{ answer.question.content }}
+                                    </a>
+                                </h5>
+                                <p class="my-2">
+                                    {{ answer.content|safe }}
+                                </p>
+                            </div>
+                        </div>
+                        <hr class="my-1">
+                        <!-- post footer begins -->
+                        <footer class="">
+                            <!-- post actions -->
+                            <div class="">
+                                <ul class="list-group list-group-horizontal">
+                                    <li class="list-group-item flex-fill text-center p-0 px-lg-2 border border-0">
+                                        <a id="answer-upvote-{{ answer.id }}" class="small text-decoration-none mr-1"
+                                            href="#" onClick="answerVote(event, {{ answer.id }}, 'upvote')">
+                                            <i
+                                                class="{% if request.user in answer.upvotes.all %} fas fa-thumbs-up {% else %} far fa-thumbs-up {% endif %}"></i>
+                                            <span
+                                                id="answer-upvote-total-{{ answer.id }}">{{ answer.upvotes.all.count }}</span>
+                                        </a>
+                                        <a id="answer-downvote-{{ answer.id }}" class="small text-decoration-none"
+                                            href="#" onClick="answerVote(event, {{ answer.id }}, 'downvote')">
+                                            <i
+                                                class="{% if request.user in answer.downvotes.all %} fas fa-thumbs-down {% else %} far fa-thumbs-down {% endif %}"></i>
+                                            <span
+                                                id="answer-downvote-total-{{ answer.id }}">{{ answer.downvotes.all.count }}</span>
+                                        </a>
+                                    </li>
+                                    <li
+                                        class="list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0 border-top-0 border-bottom-0">
+                                        <a class="small text-decoration-none" data-toggle="collapse"
+                                            href="#{{ answer.author.username }}{{ answer.id }}" role="button"
+                                            aria-expanded="false" aria-controls="collapseExample">
+                                            <i class="fas fa-comment-alt"></i> {{ answer.comments.all.count }}
+                                            {% if answer.comments.all.count == 1 %}
+                                            comment
+                                            {% else %}
+                                            comments
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                    <li
+                                        class="list-group-item flex-fill text-center p-0 px-lg-2 border border-right-0 border-top-0 border-bottom-0 ">
+                                        <form id="answer_share_form" method='POST'
+                                            action="{% url 'core:answer_share' answer.pk %}">
+                                            {% csrf_token %}
+                                            <a class="small text-decoration-none" href="javascript:{}"
+                                                onClick="document.getElementById('answer_share_form').submit();">
+                                                {% if user in answer.shares.all %} <i class="fas fa-share-square"></i>
+                                                {% else %}<i class="far fa-share-square"></i>
+                                                {% endif %}{{ answer.shares.all|length }}
+                                                {% if answer.shares.all|length == 1 %} Share {% else %} Shares
+                                                {% endif %}
+                                            </a>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+
+
+                            <!-- collapsed comments begins -->
+                            <div class="collapse" id="{{ answer.author.username }}{{ answer.id }}">
+                                <div class="card border border-right-0 border-left-0 border-bottom-0 mt-1">
+                                    <!-- new comment form -->
+                                    <section class="mt-3">
+                                        <form action="" onSubmit="addComment(event, {{ answer.id }})">
+                                            <div class="input-group input-group">
+                                                <input type="text" class="form-control" placeholder="Write Comment"
+                                                    aria-label="Recipient's username" aria-describedby="basic-addon2"
+                                                    id="comment-form-input-{{ answer.id }}"
+                                                    onKeyUp="commentInputChange(event, {{ answer.id }})">
+                                                <div class="input-group-append">
+                                                    <input type="submit" value="Comment"
+                                                        id="comment-submit-button-{{ answer.id }}"
+                                                        class="text-decoration-none text-white btn btn-primary" disabled
+                                                        style="cursor:not-allowed;" />
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </section>
+                                    <!-- comment card bgins -->
+                                    <div id="comments-container-{{ answer.id }}">
+                                        {% for comment in answer.comments.all %}
+                                        <section id="answer-comment-{{ comment.pk }}">
+                                            <div class="card p-2 mt-3">
+                                                <!-- comment header -->
+                                                <div class="d-flex">
+                                                    <div class="">
+                                                        <div id="home-questions-list-avatar"
+                                                            style="background-image: url('{{ comment.user.get_avatar }}')">
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex-grow-1 pl-2">
+                                                        <a class="text-decoration-none text-capitalize h6 m-0"
+                                                            href="{% url 'accounts:profile' comment.user.username %}">{{ comment.user.username }}</a>
+                                                        <p class="small m-0 text-muted">{{ comment.uploaded_on }}</p>
+                                                    </div>
+                                                    {% if user == comment.user %}
+                                                    <div>
+                                                        <div class="dropdown">
+                                                            <a class="" href="#" role="button" id="dropdownMenuLink"
+                                                                data-toggle="dropdown" aria-haspopup="true"
+                                                                aria-expanded="false">
+                                                                <i class="fas fa-chevron-down"></i>
+                                                            </a>
+
+                                                            <div class="dropdown-menu"
+                                                                aria-labelledby="dropdownMenuLink">
+                                                                <a data-toggle="modal" href="#myModal"
+                                                                    class="dropdown-item text-primary"
+                                                                    onClick="deleteComment(event, {{ comment.pk }})">Delete</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {% endif %}
+                                                </div>
+                                                <!-- comment header -->
+                                                <!-- comment body -->
+                                                <div class="card-body p-0">
+                                                    <p class="card-text h7 mb-1">{{ comment.content }}</p>
+                                                    <a id="comment-upvote-{{ comment.id }}" class="card-link small"
+                                                        href="#"
+                                                        onClick="commentVote(event, {{ comment.id }}, 'upvote')">
+                                                        <i
+                                                            class="{% if request.user in comment.upvotes.all %} fas fa-thumbs-up {% else %} far fa-thumbs-up {% endif %}"></i>
+                                                        <span
+                                                            id="comment-upvote-total-{{ comment.id }}">{{ comment.upvotes.all.count }}</span>
+                                                    </a>
+                                                    <a id="comment-downvote-{{ comment.id }}" class="card-link small"
+                                                        href="#"
+                                                        onClick="commentVote(event, {{ comment.id }}, 'downvote')">
+                                                        <i
+                                                            class="{% if request.user in comment.downvotes.all %} fas fa-thumbs-down {% else %} far fa-thumbs-down {% endif %}"></i>
+                                                        <span
+                                                            id="comment-downvote-total-{{ comment.id }}">{{ comment.downvotes.all.count }}</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </section>
+                                        {% endfor %}
+                                    </div>
+                                    <!-- comment card ends -->
+
+                                </div>
+                            </div>
+                            <!-- collapsed comments ends -->
+                        </footer>
+                        <!-- post footer ends -->
+                    </div>
+                </section>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+{% csrf_token %}
+{{ user.username|json_script:'user-username' }}
+<script src="{% static 'js/answer.js' %}"></script>
+<script src="{% static 'js/Profile.js' %}"></script>
+{% endblock %}

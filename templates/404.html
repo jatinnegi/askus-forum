@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %} Page Not Found {% endblock %}
+{% block content %}
+<style>
+    .display-1 {
+        text-align: center;
+        color: #e1b7b7;
+    }
+
+    .display-1 .fa {
+        animation: fa-spin 5s infinite linear;
+    }
+
+    .display-3 {
+        text-align: center;
+        color: #df726a;
+    }
+
+    .lower-case {
+        text-align: center;
+    }
+</style>
+<div class="wrapper">
+    <div class="container-fluid" id="top-container-fluid-nav">
+        <div class="container">
+            <div class="jumbotron" style='background: inherit !important;'>
+                <h1 class="display-1">4<i class="fa  fa-spin fa-cog fa-3x"></i> 4</h1>
+                <h1 class="display-3">ERROR</h1>
+                <p class="lower-case">The webpage your are looking for has either been removed or does not exist.</p>
+                <p class="lower-case">Try again later.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,62 @@
+{% load static %}
+<nav id="app-navbar" class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'core:home' %}">AskUs</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent-4"
+            aria-controls="navbarSupportedContent-4" aria-expanded="false" aria-label="Toggle navigation"
+            style="outline:none;border:none;">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse pt-2" id="navbarSupportedContent-4">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item mr-3" style="min-width:400px;">
+                    <form method='GET' action="{% url 'core:search' %}" class="d-flex input-group w-auto">
+                        <input name="q" type="search" class="form-control" placeholder="Type query"
+                            aria-label="Search" />
+                        <button class="btn btn-outline-primary" type="submit" data-mdb-ripple-color="dark">
+                            Search
+                        </button>
+                    </form>
+                </li>
+                <li id='navbar-home-link' class="nav-item">
+                    <a class="nav-link waves-effect waves-light" href="{% url 'core:home' %}">
+                        <i class="fas fa-home"></i> Home
+                        <span class="sr-only">(current)</span>
+                    </a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown" style='cursor:pointer;'>
+                    <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class='navbar-avatar' style="background-image: url('{{ user.avatar.url }}')"></div>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"
+                        style='position:absolute; left:-50%;'>
+                        <li><a class="dropdown-item" href="{% url 'accounts:profile' user.username %}">My profile</a>
+                        </li>
+                        <li><a class="dropdown-item"
+                                href="{% url 'accounts:logout' %}?next={{ request.get_full_path|urlencode }}">Logout</a>
+                        </li>
+                    </ul>
+                </li>
+                {% else %}
+                <li class="nav-item dropdown" style='cursor:pointer;'>
+                    <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <div class='navbar-avatar'
+                            style="background-image: url('http://localhost:8000/media/avatar/default.jpg')"></div>
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"
+                        style='position:absolute; left:-50%;'>
+                        <a class="dropdown-item"
+                            href="{% url 'accounts:signup' %}?next={{ request.get_full_path|urlencode }}">Sign
+                            Up</a>
+                        <a class="dropdown-item"
+                            href="{% url 'accounts:login' %}?next={{ request.get_full_path|urlencode }}">Log In</a>
+                    </ul>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>

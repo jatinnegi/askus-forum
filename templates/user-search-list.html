@@ -1,0 +1,37 @@
+{% load static %}
+
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+<script src="https://kit.fontawesome.com/8c0844d769.js" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{% static 'css/user-search-list.css' %}">
+
+<div id="box-container">
+    <div id="box">
+        <div id="users-list">
+            <div id="topmenu">
+                <div id="all-users-list" onClick="toggleTopmenu(event)"><i class="fas fa-users"
+                        style="pointer-events:none;"></i></div>
+                <div id="selected-users-list" onClick="toggleTopmenu(event)"><i class="fas fa-list"
+                        style="pointer-events:none;"></i>
+                </div>
+                <span id="selected-users-list-total">0</span>
+                <div id="active-bar"></div>
+            </div>
+            <div id="search">
+                <input type="text" id="searchfield" placeholder="Search users..." />
+            </div>
+            <div class="box-body">
+                <div id="users" class="active">
+                </div>
+                <div id="selected-users" class="">
+                    <h4 id="no-selected-users" style="text-align: center; padding: 20px 0;">No User
+                        Selected</h4>
+                </div>
+            </div>
+            <div class="container">
+                <button id="answer-request-submit-button" class="btn btn-primary mb-2 mr-2 rounded pl-4 pr-4" disabled
+                    style="float:right; cursor:not-allowed">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/users-search-list.js' %}"></script>

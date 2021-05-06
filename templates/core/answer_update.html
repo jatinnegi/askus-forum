@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}Answer Edit Form{% endblock %}
+{% block content %}
+<div class="pt-4">
+    <h2 class="text-secondary mb-4">Answer Edit Form</h2>
+    <div id="question-container" class="p-2 pt-3 mb-3 rounded">
+        <h4>
+            {{ question.content }}
+        </h4>
+        <small class="text-secondary d-block">{{ question.uploaded_on }}</small>
+        <small class="text-secondary mr-3">Asked by-
+            {% if question.anonymous %}
+            Anonymous User
+            {% else %}
+            <a href="{% url 'accounts:profile' question.author.username %}"
+                class="text-secondary">{{ question.author }}</a>
+            {% endif %}
+        </small>
+    </div>
+    <form method='POST' class="pb-5">
+        {% csrf_token %}
+        {{ form.media }}
+        {{ form.content }}
+        <div class="form-check p-0 mt-2">
+            {{ form.anonymous }}
+            <label for="answer-form-anonymous">
+                Answer Anonymously
+            </label>
+        </div>
+        <input type="submit" value="Update" class="btn btn-primary" />
+    </form>
+</div>
+{% endblock %}

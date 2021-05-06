@@ -1,0 +1,48 @@
+{% if user.is_authenticated %}
+<section class="card mb-5">
+    <div class="card-header">
+        <ul class="nav nav-tabs card-header-tabs" id="myTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="posts-tab" data-toggle="tab" href="#posts" role="tab"
+                    aria-controls="posts" aria-selected="true">What is your question?</a>
+            </li>
+        </ul>
+    </div>
+    <form method='POST' action="{% url 'core:home' %}" class="card-body" novalidate>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="posts" role="tabpanel" aria-labelledby="posts-tab">
+                {% csrf_token %}
+                <div class="form-group mb-1 {% if question_form.content.errors %} form-error {% endif %}">
+                    {{ question_form.content }}
+                </div>
+                {% for error in question_form.content.errors %}
+                <p class="text-danger">{{ error }}</p>
+                {% endfor %}
+                <div class="form-check p-0 mt-2">
+                    {{ question_form.anonymous }}
+                    <label for="question-form-anonymous">
+                        Ask anonymously
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="text-right">
+            <button id="question-submit-button" type="submit" class="btn btn-primary mt-1" disabled
+                style="cursor:not-allowed">Submit</button>
+        </div>
+    </form>
+</section>
+<script>
+    const questionSubmitButton = document.getElementById("question-submit-button");
+
+    function questionContentKeyUp(event) {
+        if (event.target.value === "") {
+            questionSubmitButton.disabled = true;
+            questionSubmitButton.style = 'cursor:not-allowed';
+        } else {
+            questionSubmitButton.disabled = false;
+            questionSubmitButton.style = 'cursor:pointer';
+        }
+    }
+</script>
+{% endif %}
