@@ -3,7 +3,7 @@
 {% block title %}{{ profile_user.username|capfirst }} - AskUs Profile{% endblock %}
 {% block content %}
 <div class="profile">
-    {% comment %} <div class="secondary-tab mb-4">
+    <div class="secondary-tab mb-4">
         <div class="avatar-container mb-4">
             <img class="user-avatar-image" src="{{ profile_user.get_avatar }}"
                 alt="{{ profile_user.username }}'s profile picture" />
@@ -22,7 +22,7 @@
         {% if user == profile_user %}
         {% include 'core/sidepanel.html' %}
         {% endif %}
-    </div> {% endcomment %}
+    </div>
     {% comment %} <div class="primary-tab">
         {% if profile_user.get_full_name|length > 0 %}
         <h4>{{ profile_user.get_full_name }}</h4>

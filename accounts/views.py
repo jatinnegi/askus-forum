@@ -73,10 +73,10 @@ def profile_view(request, username):
 
     try:
         user = User.objects.get(username=username)
-        # form = AvatarUpdateForm()
+        form = AvatarUpdateForm()
         context = {
             'profile_user': user,
-            # 'form': form
+            'form': form
         }
         return render(request, 'registration/profile.html', context)
     except User.DoesNotExist:
