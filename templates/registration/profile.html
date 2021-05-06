@@ -3,7 +3,7 @@
 {% block title %}{{ profile_user.username|capfirst }} - AskUs Profile{% endblock %}
 {% block content %}
 <div class="profile">
-    <div class="secondary-tab mb-4">
+    {% comment %} <div class="secondary-tab mb-4">
         <div class="avatar-container mb-4">
             <img class="user-avatar-image" src="{{ profile_user.get_avatar }}"
                 alt="{{ profile_user.username }}'s profile picture" />
@@ -16,13 +16,13 @@
         <form class="avatar-form" method='POST' action="{% url 'accounts:avatar_update' profile_user.username %}"
             enctype="multipart/form-data">
             {% csrf_token %}
-            {% comment %} {{ form.avatar }} {% endcomment %}
+            {{ form.avatar }}
             <input id="avatar-update" type="submit" value="Update" />
         </form>
         {% if user == profile_user %}
         {% include 'core/sidepanel.html' %}
         {% endif %}
-    </div>
+    </div> {% endcomment %}
     <div class="primary-tab">
         {% if profile_user.get_full_name|length > 0 %}
         <h4>{{ profile_user.get_full_name }}</h4>
