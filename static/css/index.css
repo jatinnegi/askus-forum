@@ -22,14 +22,8 @@ body {
 }
 
 #app-navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 60px;
-  z-index: 50;
 }
-
 .navbar-avatar {
   height: 30px;
   width: 30px;
