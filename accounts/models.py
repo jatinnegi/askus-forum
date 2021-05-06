@@ -40,7 +40,7 @@ class User(AbstractUser):
         return file_path
 
     avatar = models.ImageField(
-        upload_to=content_from_file, blank=True, default='avatar/default.jpg')
+        upload_to=content_from_file, blank=True, null=True)
 
     @property
     def get_avatar(self):
