@@ -1,1 +1,1 @@
-web: gunicorn askus_forum.wsgi --log-file -
+web: gunicorn askus_forum.wsgi:application --log-file -
