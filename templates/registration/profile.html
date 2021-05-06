@@ -23,7 +23,7 @@
         {% include 'core/sidepanel.html' %}
         {% endif %}
     </div>
-    {% comment %} <div class="primary-tab">
+    <div class="primary-tab">
         {% if profile_user.get_full_name|length > 0 %}
         <h4>{{ profile_user.get_full_name }}</h4>
         {% endif %}
@@ -173,7 +173,7 @@
                                 <a class="text-decoration-none"
                                     href="{% url 'accounts:profile' answer.author.username %}">
                                     <div id="home-questions-list-avatar"
-                                        style="background-image:url('{{answer.author.avatar.url}}');">
+                                        style="background-image:url('{{answer.author.get_avatar}}');">
                                     </div>
                                 </a>
                             </div>
@@ -363,7 +363,7 @@
                 {% endfor %}
             </div>
         </div>
-    </div> {% endcomment %}
+    </div>
 </div>
 </div>
 {% csrf_token %}
