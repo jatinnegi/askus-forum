@@ -71,15 +71,16 @@ class SignUpView(CreateView):
 def profile_view(request, username):
     User = get_user_model()
 
-    user = get_object_or_404(User, username=username)
-    form = AvatarUpdateForm()
-
-    context = {
-        'profile_user': user,
-        'form': form
-    }
-
-    return render(request, 'registration/profile.html', context)
+    try:
+        user = User.objects.get(username=username)
+        form = AvatarUpdateForm()
+        context = {
+            'profile_user': user,
+            'form': form
+        }
+        return render(request, 'registration/profile.html', context)
+    except User.DoesNotExist:
+        return render(request, '404.html', {'msg': 'No user found'})
 
 
 @login_required

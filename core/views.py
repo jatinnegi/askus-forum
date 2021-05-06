@@ -49,59 +49,66 @@ def home_view(request):
 
 
 def question_view(request, pk):
-    answer_form = AnswerForm()
-    question = get_object_or_404(Question, pk=pk)
 
-    # get current users answers
-    if request.user.is_authenticated:
-        auth_answers_list = question.answers.filter(author=request.user)
+    try:
+        question = Question.objects.get(pk=pk)
+        answer_form = AnswerForm()
 
-        answers_list = sorted(question.answers.filter(
-            ~Q(author=request.user)), key=lambda t: -t.number_of_upvotes)
+        # get current users answers
+        if request.user.is_authenticated:
+            auth_answers_list = question.answers.filter(author=request.user)
 
-        answers = chain(auth_answers_list, answers_list)
+            answers_list = sorted(question.answers.filter(
+                ~Q(author=request.user)), key=lambda t: -t.number_of_upvotes)
 
-    else:
-        answers = question.answers.all()
+            answers = chain(auth_answers_list, answers_list)
 
-    context = {
-        'form': answer_form,
-        'question': question,
-        'answers': answers
-    }
+        else:
+            answers = question.answers.all()
 
-    return render(request, 'core/question.html', context)
+        context = {
+            'form': answer_form,
+            'question': question,
+            'answers': answers
+        }
+
+        return render(request, 'core/question.html', context)
+    except Question.DoesNotExist:
+        return render(request, '404.html', {'msg': 'No question found'})
 
 
 @login_required
 def question_update_view(request, pk):
-    question = get_object_or_404(Question, pk=pk)
 
-    if question.author != request.user:
-        return HttpResponseRedirect('core:home')
+    try:
+        question = Question.objects.get(pk=pk)
+        if question.author != request.user:
+            return HttpResponseRedirect('core:home')
 
-    form = QuestionForm(instance=question)
+        form = QuestionForm(instance=question)
 
-    if request.method == 'POST':
-        form = QuestionForm(request.POST)
+        if request.method == 'POST':
+            form = QuestionForm(request.POST)
 
-        if form.is_valid():
-            content = form.cleaned_data['content']
-            anonymous = form.cleaned_data['anonymous']
+            if form.is_valid():
+                content = form.cleaned_data['content']
+                anonymous = form.cleaned_data['anonymous']
 
-            question.content = content
-            question.anonymous = anonymous
+                question.content = content
+                question.anonymous = anonymous
 
-            question.save()
+                question.save()
 
-            messages.add_message(request, messages.SUCCESS,
-                                 "Question edited successfully")
+                messages.add_message(request, messages.SUCCESS,
+                                     "Question edited successfully")
 
-            return HttpResponseRedirect(reverse_lazy('core:question', kwargs={'pk': pk}))
+                return HttpResponseRedirect(reverse_lazy('core:question', kwargs={'pk': pk}))
 
-    context = {'question_form': form}
+        context = {'question_form': form}
 
-    return render(request, 'core/question_update.html', context)
+        return render(request, 'core/question_update.html', context)
+    except Question.DoesNotExist:
+        return render(request, '404.html', {'msg': 'No question found'})
 
 
 @login_required
@@ -332,39 +339,43 @@ def comment_vote_view(request, pk):
 
 @login_required
 def answer_update_view(request, pk):
-    answer = get_object_or_404(Answer, pk=pk)
-    question = Question.objects.get(pk=answer.question.pk)
 
-    if request.user != answer.author:
-        return HttpResponseRedirect(reverse_lazy('core:home'))
+    try:
+        answer = Answer.objects.get(pk=pk)
+        question = Question.objects.get(pk=answer.question.pk)
 
-    form = AnswerForm(instance=answer)
+        if request.user != answer.author:
+            return HttpResponseRedirect(reverse_lazy('core:home'))
 
-    context = {
-        'question': question,
-        'form': form
-    }
+        form = AnswerForm(instance=answer)
 
-    if request.method == 'POST':
-        form = AnswerForm(request.POST)
+        context = {
+            'question': question,
+            'form': form
+        }
 
-        if form.is_valid():
-            content = form.cleaned_data['content']
-            anonymous = form.cleaned_data['anonymous']
+        if request.method == 'POST':
+            form = AnswerForm(request.POST)
 
-            if content.__len__() == 0:
-                return HttpResponseRedirect(reverse_lazy('core:answer_update', kwargs={'pk': pk}))
+            if form.is_valid():
+                content = form.cleaned_data['content']
+                anonymous = form.cleaned_data['anonymous']
 
-            answer.content = content
-            answer.anonymous = anonymous
+                if content.__len__() == 0:
+                    return HttpResponseRedirect(reverse_lazy('core:answer_update', kwargs={'pk': pk}))
 
-            answer.save()
+                answer.content = content
+                answer.anonymous = anonymous
 
-            messages.add_message(request, messages.SUCCESS,
-                                 'Answer updated successfully!')
-            return HttpResponseRedirect(reverse_lazy('core:question', kwargs={'pk': question.pk}))
+                answer.save()
 
-    return render(request, 'core/answer_update.html', context)
+                messages.add_message(request, messages.SUCCESS,
+                                     'Answer updated successfully!')
+                return HttpResponseRedirect(reverse_lazy('core:question', kwargs={'pk': question.pk}))
+
+        return render(request, 'core/answer_update.html', context)
+    except Answer.DoesNotExist:
+        return render(request, '404.html', {'msg': 'No answer found'})
 
 
 @login_required
