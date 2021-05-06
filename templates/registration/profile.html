@@ -16,7 +16,7 @@
         <form class="avatar-form" method='POST' action="{% url 'accounts:avatar_update' profile_user.username %}"
             enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.avatar }}
+            {% comment %} {{ form.avatar }} {% endcomment %}
             <input id="avatar-update" type="submit" value="Update" />
         </form>
         {% if user == profile_user %}
