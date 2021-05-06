@@ -238,7 +238,7 @@
                                                     </div>
                                                     <div class="flex-grow-1 pl-2">
                                                         <a class="text-decoration-none text-capitalize h6 m-0"
-                                                            href="{% url 'accounts:profile' answer.author.username %}">{{ comment.user.username }}</a>
+                                                            href="{% url 'accounts:profile' comment.user.username %}">{{ comment.user.username }}</a>
                                                         <p class="small m-0 text-muted">{{ comment.uploaded_on }}</p>
                                                     </div>
                                                     {% if user == comment.user %}
