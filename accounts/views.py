@@ -73,7 +73,7 @@ def profile_view(request, username):
 
     try:
         user = User.objects.get(username=username)
-        form = AvatarUpdateForm()
+        # form = AvatarUpdateForm()
         context = {
             'profile_user': user,
             # 'form': form
