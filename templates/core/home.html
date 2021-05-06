@@ -18,12 +18,12 @@
                         <div class="">
                             {% if answer.anonymous %}
                             <div id="home-questions-list-avatar"
-                                style="background-image:url('{{answer.author.get_anonymous_avatar}}');">
+                                style="background-image:url('https://qsfs.fs.quoracdn.net/-4-images.new_grid.profile_default_anonymous.png-26-a62b84947fe6f16f.png');">
                             </div>
                             {% else %}
                             <a class="text-decoration-none" href="{% url 'accounts:profile' answer.author.username %}">
                                 <div id="home-questions-list-avatar"
-                                    style="background-image:url('{{answer.author.avatar.url}}');">
+                                    style="background-image:url('{{answer.author.get_avatar}}');">
                                 </div>
                             </a>
                             {% endif %}
@@ -153,7 +153,7 @@
                                             <div class="d-flex">
                                                 <div class="">
                                                     <div id="home-questions-list-avatar"
-                                                        style="background-image: url('{{ comment.user.avatar.url }}')">
+                                                        style="background-image: url('{{ comment.user.get_avatar }}')">
                                                     </div>
                                                 </div>
                                                 <div class="flex-grow-1 pl-2">

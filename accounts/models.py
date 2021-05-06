@@ -40,11 +40,16 @@ class User(AbstractUser):
         return file_path
 
     avatar = models.ImageField(
-        upload_to=content_from_file, blank=True, null=True)
+        upload_to=content_from_file, blank=True)
 
     @property
     def get_avatar(self):
-        return f'/media/{self.avatar}'
+        avatar_url = "https://i.stack.imgur.com/34AD2.jpg"
+
+        if self.avatar:
+            avatar_url = self.avatar.url
+
+        return avatar_url
 
     @property
     def get_anonymous_avatar(self):

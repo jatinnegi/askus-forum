@@ -111,7 +111,7 @@
                                 <a class="text-decoration-none"
                                     href="{% url 'accounts:profile' answer.author.username %}">
                                     <div id="home-questions-list-avatar"
-                                        style="background-image:url('{% if answer.anonymous %}{{ answer.author.get_anonymous_avatar }}{% else %}{{ answer.author.get_avatar }}{% endif %}');">
+                                        style="background-image:url('{% if answer.anonymous %}https://qsfs.fs.quoracdn.net/-4-images.new_grid.profile_default_anonymous.png-26-a62b84947fe6f16f.png{% else %}{{ answer.author.get_avatar }}{% endif %}');">
                                     </div>
                                 </a>
                             </div>

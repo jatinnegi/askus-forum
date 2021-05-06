@@ -269,7 +269,7 @@ def comment_view(request, pk):
             'answer_id': answer_comment.answer.pk,
             'user': {
                 'username': answer_comment.user.username,
-                'avatar': answer_comment.user.avatar.url,
+                'avatar': answer_comment.user.get_avatar,
             },
             'content': answer_comment.content,
             'upvotes': answer_comment.upvotes.all().count(),

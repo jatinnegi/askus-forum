@@ -28,7 +28,7 @@
                 <li class="nav-item dropdown" style='cursor:pointer;'>
                     <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class='navbar-avatar' style="background-image: url('{{ user.avatar.url }}')"></div>
+                        <div class='navbar-avatar' style="background-image: url('{{ user.get_avatar }}')"></div>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"
                         style='position:absolute; left:-50%;'>
@@ -43,8 +43,8 @@
                 <li class="nav-item dropdown" style='cursor:pointer;'>
                     <a class="nav-link dropdown-toggle waves-effect waves-light" id="navbarDropdownMenuLink"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <div class='navbar-avatar'
-                            style="background-image: url('http://localhost:8000/media/avatar/default.jpg')"></div>
+                        <div class='navbar-avatar' style="background-image: url('https://i.stack.imgur.com/34AD2.jpg')">
+                        </div>
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink"
                         style='position:absolute; left:-50%;'>

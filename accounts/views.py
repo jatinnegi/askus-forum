@@ -94,7 +94,7 @@ def avatar_update_view(request, username):
             if form.is_valid():
                 avatar = form.cleaned_data['avatar']
 
-                if user.avatar.url != '/media/avatar/default.jpg':
+                if user.avatar:
                     user.avatar.delete()
 
                 user.avatar = avatar
@@ -102,6 +102,7 @@ def avatar_update_view(request, username):
 
                 messages.add_message(request, messages.SUCCESS,
                                      "Avatar updated successfully!")
+
                 return HttpResponseRedirect(reverse_lazy('accounts:profile', kwargs={'username': username}))
 
     return HttpResponseRedirect(reverse_lazy('accounts:profile', kwargs={'username': username}))
