@@ -1,2 +1,1 @@
-web: gunicorn askus_forum.wsgi:application --log-file -
-
+web: gunicorn askus_forum.wsgi:application --preload --log-file -
