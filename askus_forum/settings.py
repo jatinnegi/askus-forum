@@ -81,16 +81,17 @@ WSGI_APPLICATION = 'askus_forum.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'askus_database',
-        'CLIENT': {
-            'host': 'mongodb+srv://username:<password>@cluster0.mmt7s.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-            'username': 'jatin123',
-            'password': 'mypassword',
-            'authMechanism': 'SCRAM-SHA-1'
-        }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'askus_forum',
+        'USER': 'postgres',
+        'PASSWORD': 'Retype@..123',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
