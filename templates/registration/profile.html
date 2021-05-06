@@ -23,7 +23,7 @@
         {% include 'core/sidepanel.html' %}
         {% endif %}
     </div> {% endcomment %}
-    <div class="primary-tab">
+    {% comment %} <div class="primary-tab">
         {% if profile_user.get_full_name|length > 0 %}
         <h4>{{ profile_user.get_full_name }}</h4>
         {% endif %}
@@ -363,7 +363,7 @@
                 {% endfor %}
             </div>
         </div>
-    </div>
+    </div> {% endcomment %}
 </div>
 </div>
 {% csrf_token %}
