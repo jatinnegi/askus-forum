@@ -17,7 +17,7 @@ fetch("/accounts/answers/requests/")
       liTag.innerHTML = `
       <a href='/question/${
         request.question_id
-      }' style="font-weight:600; font-size: 1.1rem;" class="mb-0 text-primary">${
+      }/' style="font-weight:600; font-size: 1.1rem;" class="mb-0 text-primary">${
         request.content
       }</a>
       <p class="mt-2">answer requested by <a href='/accounts/@/${
