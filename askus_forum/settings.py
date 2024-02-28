@@ -225,8 +225,7 @@ CKEDITOR_CONFIGS = {
     }
 }
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'askus-forum.herokuapp.com',
-                 'https://askus-forum.herokuapp.com', 'http://askus-forum.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 WHITENOISE_USE_FINDERS = True
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
